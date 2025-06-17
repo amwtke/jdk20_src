@@ -125,7 +125,7 @@ inline uintptr_t ZAddress::marked0(uintptr_t value) {
 inline uintptr_t ZAddress::marked1(uintptr_t value) {
   return offset(value) | ZAddressMetadataMarked1;
 }
-
+// 地址是两个部分拼接起来的，offset是实际的虚拟地址 | ZAddressMetadataRemapped 这个标志位。
 inline uintptr_t ZAddress::remapped(uintptr_t value) {
   return offset(value) | ZAddressMetadataRemapped;
 }
