@@ -700,7 +700,7 @@ bool G1Policy::need_to_start_conc_mark(const char* source, size_t alloc_word_siz
   if (about_to_start_mixed_phase()) {
     return false;
   }
-
+    //-XX:InitiatingHeapOccupancyPercent
   size_t marking_initiating_used_threshold = _ihop_control->get_conc_mark_start_threshold();
 
   size_t cur_used_bytes = _g1h->non_young_capacity_bytes();
@@ -708,6 +708,7 @@ bool G1Policy::need_to_start_conc_mark(const char* source, size_t alloc_word_siz
   size_t marking_request_bytes = cur_used_bytes + alloc_byte_size;
 
   bool result = false;
+  //如果老年代的大小（包括achive hugmous）大于阈值，就触发老年代的并行标记线程。
   if (marking_request_bytes > marking_initiating_used_threshold) {
     result = collector_state()->in_young_only_phase() && !collector_state()->in_young_gc_before_mixed();
     log_debug(gc, ergo, ihop)("%s occupancy: " SIZE_FORMAT "B allocation request: " SIZE_FORMAT "B threshold: " SIZE_FORMAT "B (%1.2f) source: %s",
