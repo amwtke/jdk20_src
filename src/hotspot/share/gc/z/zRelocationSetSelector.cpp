@@ -115,7 +115,8 @@ void ZRelocationSetSelectorGroup::select_inner() {
   size_t selected_forwarding_entries = 0;
   size_t from_live_bytes = 0;
   size_t from_forwarding_entries = 0;
-
+  // 经过这个函数，live_pages 是排好序的了。按照生存对象大小升序，垃圾降序。
+  //_live_pages 是按照region分类的数组，记录了所有这个类型 —— small  medium 的所有可回收pages集合。
   semi_sort();
 
   for (int from = 1; from <= npages; from++) {
@@ -137,6 +138,7 @@ void ZRelocationSetSelectorGroup::select_inner() {
     const int diff_from = from - selected_from;
     const int diff_to = to - selected_to;
     const double diff_reclaimable = 100 - percent_of(diff_to, diff_from);
+    // ZFragmentationLimit page内部的可用空间比率，这里就是筛选出垃圾空间比例高于一个比率的pages，这种page容易产生碎片。所以选择去回收。
     if (diff_reclaimable > ZFragmentationLimit) {
       selected_from = from;
       selected_to = to;
@@ -151,6 +153,7 @@ void ZRelocationSetSelectorGroup::select_inner() {
   }
 
   // Finalize selection
+  // ！！！之前 live_pages 被排序了，按照垃圾比率从大到小，所以这里做了截断，只回收收益大的。
   _live_pages.trunc_to(selected_from);
   _forwarding_entries = selected_forwarding_entries;
 

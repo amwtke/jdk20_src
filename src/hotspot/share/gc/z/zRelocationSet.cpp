@@ -85,6 +85,7 @@ public:
 
   virtual void work() {
     // Allocate and install forwardings for small pages
+    //每个region类型 筛选过的 _live_pages 都插入一个forwarding集合，就是relocationset。
     for (ZPage* page; _small_iter.next(&page);) {
       ZForwarding* const forwarding = ZForwarding::alloc(_allocator, page);
       install_small(forwarding);

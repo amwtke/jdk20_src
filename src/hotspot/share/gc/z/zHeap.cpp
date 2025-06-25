@@ -408,6 +408,7 @@ void ZHeap::select_relocation_set() {
 
   // Install relocation set
   //填充 relocationSet
+  //! 汇总每个类型region的 _live_paegs 到 _relocation_set 中 其实就是一个 forwarding 数组。
   _relocation_set.install(&selector);
 
   // Setup forwarding table
