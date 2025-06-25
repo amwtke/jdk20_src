@@ -365,25 +365,32 @@ void ZHeap::free_empty_pages(ZRelocationSetSelector* selector, int bulk) {
 
 void ZHeap::select_relocation_set() {
   // Do not allow pages to be deleted
+  //不允许页被删除，底层为加个锁
   _page_allocator.enable_deferred_delete();
 
   // Register relocatable pages with selector
+  // 注册一个迁移页选择器
   ZRelocationSetSelector selector;
   ZPageTableIterator pt_iter(&_page_table);
+  //循环所有页
   for (ZPage* page; pt_iter.next(&page);) {
     if (!page->is_relocatable()) {
+      //如果已经被标记不要迁移
       // Not relocatable, don't register
       continue;
     }
-
+    //判断page是否被标记过,这里就是看页中liveMap是否有数据
     if (page->is_marked()) {
       // Register live page
+      //注册为存活页
       selector.register_live_page(page);
     } else {
+        //注册为垃圾页
       // Register empty page
       selector.register_empty_page(page);
 
       // Reclaim empty pages in bulk
+      //回收整页的垃圾，垃圾页就地回收
       free_empty_pages(&selector, 64 /* bulk */);
     }
   }
@@ -395,12 +402,16 @@ void ZHeap::select_relocation_set() {
   _page_allocator.disable_deferred_delete();
 
   // Select relocation set
+  //从每个不同的region大小中，选择合适的半满region，放入relocation set中，等待合并。
+  //从large到medium到small的顺序，选择收益最高的page加入relocation set。
   selector.select();
 
   // Install relocation set
+  //填充 relocationSet
   _relocation_set.install(&selector);
 
   // Setup forwarding table
+  //根据relocationset插入forwarding table。
   ZRelocationSetIterator rs_iter(&_relocation_set);
   for (ZForwarding* forwarding; rs_iter.next(&forwarding);) {
     _forwarding_table.insert(forwarding);
