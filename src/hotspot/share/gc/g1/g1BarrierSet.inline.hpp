@@ -47,11 +47,13 @@ inline void G1BarrierSet::enqueue_preloaded(oop pre_val) {
 
 template <class T>
 inline void G1BarrierSet::enqueue(T* dst) {
+   //!satb-enqueue -2 全局的 satb queue。
   G1SATBMarkQueueSet& queue_set = G1BarrierSet::satb_mark_queue_set();
   if (!queue_set.is_active()) return;
 
   T heap_oop = RawAccess<MO_RELAXED>::oop_load(dst);
   if (!CompressedOops::is_null(heap_oop)) {
+      //!satb-enqueue -3 取到local satb queue
     SATBMarkQueue& queue = G1ThreadLocalData::satb_mark_queue(Thread::current());
     queue_set.enqueue_known_active(queue, CompressedOops::decode_not_null(heap_oop));
   }
@@ -63,7 +65,7 @@ inline void G1BarrierSet::write_ref_field_pre(T* field) {
       HasDecorator<decorators, AS_NO_KEEPALIVE>::value) {
     return;
   }
-
+//!satb-enqueue -1
   enqueue(field);
 }
 

@@ -242,6 +242,7 @@ void SATBMarkQueueSet::handle_zero_index(SATBMarkQueue& queue) {
   } else {
     filter(queue);
     if (should_enqueue_buffer(queue)) {
+        //!satb-enqueue -4 汇入主 satb queue。 exchange_buffer_with_new创建新的buffer。
       enqueue_completed_buffer(exchange_buffer_with_new(queue));
     } // Else continue to use the existing buffer.
   }
