@@ -75,7 +75,18 @@ inline bool G1CMSubjectToDiscoveryClosure::do_object_b(oop obj) {
   return _g1h->heap_region_containing(obj)->is_old_or_humongous_or_archive();
 }
 //!xiaojin-mark 并发标记核心染色函数。bitmap中设置1表示黑色。mark_in_bitmap。
-// 搜索这个函数可以知道 youngGC标记阶段 如何染色。
+/*
+1. bitmap 更节省内存（1 bit 代表一个对象）
+不破坏对象内部结构（不会写 mark word）
+支持并发、原子操作，线程安全
+更快做 Region 层次的扫描判断（通过 bitmap range ）
+
+2. 在 G1 的 Mixed GC 中，我们只希望回收 Old Region 中没有活对象的部分。
+if (_mark_bitmap.is_marked(obj)) {
+  // 被标记为活对象，不能回收
+}
+
+ */
 inline bool G1ConcurrentMark::mark_in_bitmap(uint const worker_id, oop const obj) {
   HeapRegion* const hr = _g1h->heap_region_containing(obj);
     //! 如果在 tams - top at mark start 之后分配的新对象，默认不标记，是黑色。
