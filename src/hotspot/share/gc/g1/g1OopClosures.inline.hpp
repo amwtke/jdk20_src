@@ -122,9 +122,12 @@ inline static void check_obj_during_refinement(T* p, oop const obj) {
   assert(g1h->is_in(p), "invariant");
 #endif // ASSERT
 }
-
+//!xiaojin-cardtable refine-4 ！！！cardtable 插入 Remember set。 G1ConcurrentRefineOopClosure
+//! A.a = B.a 通过写屏障post 会写入到 A.a（老年代） 的cardtable相应的bytemap上。dirty。B.a就是年轻代的对象。
 template <class T>
 inline void G1ConcurrentRefineOopClosure::do_oop_work(T* p) {
+    //! p是A.a的地址
+    //! o是p的值，是个指针 = B.a。
   T o = RawAccess<MO_RELAXED>::oop_load(p);
   if (CompressedOops::is_null(o)) {
     return;
@@ -143,11 +146,12 @@ inline void G1ConcurrentRefineOopClosure::do_oop_work(T* p) {
     // try to either evacuate or eager reclaim humonguous arrays of j.l.O.
     return;
   }
-
+    //! 在B.a对象的region的 Remember set。年轻代region的 Remember set。
   HeapRegionRemSet* to_rem_set = _g1h->heap_region_containing(obj)->rem_set();
 
   assert(to_rem_set != NULL, "Need per-region 'into' remsets.");
   if (to_rem_set->is_tracked()) {
+      //! 将p这个老年代对象的引用加入到 年轻代region 的 Remember set中。
     to_rem_set->add_reference(p, _worker_id);
   }
 }
