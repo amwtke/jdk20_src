@@ -233,6 +233,7 @@ void G1CollectionSet::add_young_region_common(HeapRegion* hr) {
   hr->set_young_index_in_cset(_collection_set_cur_length + 1);
 
   assert(_collection_set_cur_length < _collection_set_max_length, "Collection set larger than maximum allowed.");
+  //!xiaojin-cset -0.4 将alloc region的index放入 cset的代码。
   _collection_set_regions[_collection_set_cur_length] = hr->hrm_index();
   // Concurrent readers must observe the store of the value in the array before an
   // update to the length field.
