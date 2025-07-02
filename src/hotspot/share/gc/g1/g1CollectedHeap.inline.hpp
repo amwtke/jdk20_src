@@ -124,6 +124,11 @@ inline void G1CollectedHeap::archive_set_add(HeapRegion* hr) {
 // write barrier never queues anything when updating objects on this
 // block. It is assumed (and in fact we assert) that the block
 // belongs to a young region.
+/*
+ * 两种情况会触发：
+ * 1、mutator线程分配了一个obj，就会标记dirty
+ * 2、在移动eden对象到survival 的时候，为了提高效率，并发移动，会在每个线程的PLAB中分配 survival区域，落地对象，此时就要把转移到的对象也dirty。
+ */
 inline void
 G1CollectedHeap::dirty_young_block(HeapWord* start, size_t word_size) {
   assert_heap_not_locked();
