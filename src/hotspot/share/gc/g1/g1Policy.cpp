@@ -1257,11 +1257,13 @@ void G1Policy::decide_on_concurrent_start_pause() {
   // We also do not allow mixed GCs during marking.
   assert(!collector_state()->mark_or_rebuild_in_progress() || collector_state()->in_young_only_phase(), "sanity");
 }
-
+//!xiaojin-cset concurrent marking 收集需要mixedGC回收的regions。cset放在 G1Policy类中。
 void G1Policy::record_concurrent_mark_cleanup_end(bool has_rebuilt_remembered_sets) {
   bool mixed_gc_pending = false;
   if (has_rebuilt_remembered_sets) {
+      //!收集算法。G1CollectionSetChooser。
     G1CollectionSetCandidates* candidates = G1CollectionSetChooser::build(_g1h->workers(), _g1h->num_regions());
+    //!xiaojin-cset G1Policy里面的 _collection_set 就是 youngGC 堆里的那个，这里把 老年代收集的回收效率高的半满regions，加入到youngGC的cset的candidate中，会一并清理回收。
     _collection_set->set_candidates(candidates);
     mixed_gc_pending = next_gc_should_be_mixed("request young-only gcs");
   }

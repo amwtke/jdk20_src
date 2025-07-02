@@ -268,7 +268,7 @@ public:
 void G1YoungCollector::calculate_collection_set(G1EvacInfo* evacuation_info, double target_pause_time_ms) {
   // Forget the current allocation region (we might even choose it to be part
   // of the collection set!) before finalizing the collection set.
-  //!xiaojin-cset -0.2 release_mutator_alloc_regions 在youngGC collect早期就会填充cset。mutator也会填充。 0.3
+  //!xiaojin-cset -0.2 mutator会填充cset -0.3（每次需要分配新的region时，都会retire老的alloc region，加入cset），这里是将最后分配的alloc region也加入cset。
   allocator()->release_mutator_alloc_regions();
 
   collection_set()->finalize_initial_collection_set(target_pause_time_ms, survivor_regions());
