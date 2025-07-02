@@ -224,8 +224,9 @@ void G1ParCopyClosure<barrier, should_mark>::do_oop_work(T* p) {
   oop obj = CompressedOops::decode_not_null(heap_oop);
 
   assert(_worker_id == _par_scan_state->worker_id(), "sanity");
-
+//! 通过obj地址，得到region的attrib对象。
   const G1HeapRegionAttr state = _g1h->region_attr(obj);
+  //!xiaojin-cset -4 扫描root下的直接关联对象，只有在cset中的region中的存活对象， 才会移动。is_in_cset
   if (state.is_in_cset()) {
     oop forwardee;
     markWord m = obj->mark();

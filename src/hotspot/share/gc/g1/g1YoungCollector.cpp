@@ -667,13 +667,13 @@ public:
 
   void work(uint worker_id) {
     start_work(worker_id);
-
+//!xiaojin-cset -3 线程执行work函数。
     {
       ResourceMark rm;
 
       G1ParScanThreadState* pss = _per_thread_states->state_for_worker(worker_id);
       pss->set_ref_discoverer(_g1h->ref_processor_stw());
-
+        //!xiaojin-cset -3.1 scan_root
       scan_roots(pss, worker_id);
       evacuate_live_objects(pss, worker_id);
     }
@@ -685,7 +685,7 @@ public:
 class G1EvacuateRegionsTask : public G1EvacuateRegionsBaseTask {
   G1RootProcessor* _root_processor;
   bool _has_optional_evacuation_work;
-
+//!xiaojin-cset -3.2  scan_roots函数 。_root_processor = G1RootProcessor
   void scan_roots(G1ParScanThreadState* pss, uint worker_id) {
     _root_processor->evacuate_roots(pss, worker_id);
     _g1h->rem_set()->scan_heap_roots(pss, worker_id, G1GCPhaseTimes::ScanHR, G1GCPhaseTimes::ObjCopy, _has_optional_evacuation_work);
@@ -732,6 +732,7 @@ void G1YoungCollector::evacuate_initial_collection_set(G1ParScanThreadStateSet* 
 
   Ticks start_processing = Ticks::now();
   {
+      //!xiaojin-cset -2 准备启动扫描
     G1RootProcessor root_processor(_g1h, num_workers);
     G1EvacuateRegionsTask g1_par_task(_g1h,
                                       per_thread_states,
@@ -1092,6 +1093,7 @@ void G1YoungCollector::collect() {
 
     bool may_do_optional_evacuation = collection_set()->optional_region_length() != 0;
     // Actually do the work...
+    //!xiaojin-cset -1 这个函数在 GC 时会扫描 GC Roots，并 evacuate 所有 在 CSet 中的 Region 的对象。evacuate_initial_collection_set
     evacuate_initial_collection_set(&per_thread_states, may_do_optional_evacuation);
 
     if (may_do_optional_evacuation) {

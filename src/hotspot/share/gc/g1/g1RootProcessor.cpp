@@ -56,7 +56,7 @@ void G1RootProcessor::evacuate_roots(G1ParScanThreadState* pss, uint worker_id) 
   G1GCPhaseTimes* phase_times = _g1h->phase_times();
 
   G1EvacPhaseTimesTracker timer(phase_times, pss, G1GCPhaseTimes::ExtRootScan, worker_id);
-
+//!xiaojin-cset -3.3 迁移roots下的对象。 closures = G1ParCopyClosure
   G1EvacuationRootClosures* closures = pss->closures();
   process_java_roots(closures, phase_times, worker_id);
 
