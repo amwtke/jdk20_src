@@ -74,7 +74,8 @@ inline bool G1CMSubjectToDiscoveryClosure::do_object_b(oop obj) {
   assert(_g1h->is_in_reserved(obj), "Trying to discover obj " PTR_FORMAT " not in heap", p2i(obj));
   return _g1h->heap_region_containing(obj)->is_old_or_humongous_or_archive();
 }
-//!xiaojin-mark 并发标记设置 obj的颜色。bitmap中设置1表示黑色。mark_in_bitmap。
+//!xiaojin-mark 并发标记核心染色函数。bitmap中设置1表示黑色。mark_in_bitmap。
+// 搜索这个函数可以知道 youngGC标记阶段 如何染色。
 inline bool G1ConcurrentMark::mark_in_bitmap(uint const worker_id, oop const obj) {
   HeapRegion* const hr = _g1h->heap_region_containing(obj);
     //! 如果在 tams - top at mark start 之后分配的新对象，默认不标记，是黑色。
