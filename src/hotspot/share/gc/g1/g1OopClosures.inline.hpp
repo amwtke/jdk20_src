@@ -174,6 +174,7 @@ inline void G1ScanCardClosure::do_oop_work(T* p) {
   if (region_attr.is_in_cset()) {
     // Since the source is always from outside the collection set, here we implicitly know
     // that this is a cross-region reference too.
+    //!xiaojin-rset -3 将从老年代引用到年轻代的存活对象，加入复制队列。
     prefetch_and_push(p, obj);
     _heap_roots_found++;
   } else if (!HeapRegion::is_in_same_region(p, obj)) {

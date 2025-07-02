@@ -688,7 +688,9 @@ class G1EvacuateRegionsTask : public G1EvacuateRegionsBaseTask {
 //!xiaojin-cset -3.2  scan_roots函数 。_root_processor = G1RootProcessor
   void scan_roots(G1ParScanThreadState* pss, uint worker_id) {
     _root_processor->evacuate_roots(pss, worker_id);
+    //!xiaojin-rset -1 遍历rset 看看有没有存活对象 可以copy。pss 主要是copy到survival的闭包 - G1ParCopyClosure。
     _g1h->rem_set()->scan_heap_roots(pss, worker_id, G1GCPhaseTimes::ScanHR, G1GCPhaseTimes::ObjCopy, _has_optional_evacuation_work);
+    //!是 G1 GC 在 Evacuation 阶段中用于扫描 CSet（Collection Set）中已复制对象的字段引用，从而完成对象图的递归处理。这是 Young GC 和 Mixed GC 中的核心过程之一
     _g1h->rem_set()->scan_collection_set_regions(pss, worker_id, G1GCPhaseTimes::ScanHR, G1GCPhaseTimes::CodeRoots, G1GCPhaseTimes::ObjCopy);
   }
 

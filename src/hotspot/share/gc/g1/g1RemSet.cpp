@@ -400,6 +400,7 @@ public:
     uint cur = start_pos;
 
     do {
+        //!xiaojin-rset -2 do_heap_region
       bool result = cl->do_heap_region(g1h->region_at(_next_dirty_regions->at(cur)));
       guarantee(!result, "Not allowed to ask for early termination.");
       cur++;
@@ -749,7 +750,7 @@ public:
     _scanned_card_value(remember_already_scanned_cards ? G1CardTable::g1_scanned_card_val()
                                                        : G1CardTable::clean_card_val()) {
   }
-
+//!xiaojin-rset -2 do_heap_region 遍历老年代的 dirty card table 以root开始遍历存活对象。scan_heap_roots
   bool do_heap_region(HeapRegion* r) {
     assert(!r->in_collection_set() && r->is_old_or_humongous_or_archive(),
            "Should only be called on old gen non-collection set regions but region %u is not.",
