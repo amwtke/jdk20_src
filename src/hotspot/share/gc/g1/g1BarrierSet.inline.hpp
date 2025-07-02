@@ -72,8 +72,10 @@ inline void G1BarrierSet::write_ref_field_pre(T* field) {
 template <DecoratorSet decorators, typename T>
 inline void G1BarrierSet::write_ref_field_post(T* field, oop new_val) {
   volatile CardValue* byte = _card_table->byte_for(field);
+  //! 从card表中可以看出某个对象是否是old。
   if (*byte != G1CardTable::g1_young_card_val()) {
     // Take a slow path for cards in old
+    //! 把card表中这个对象的那个卡位置的地址写入了脏卡queue。有了个byte就知道了这个对象在card表中的位置，就可以计算出对象的指针。
     write_ref_field_post_slow(byte);
   }
 }
