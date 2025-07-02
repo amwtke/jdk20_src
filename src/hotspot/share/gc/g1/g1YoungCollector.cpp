@@ -268,6 +268,7 @@ public:
 void G1YoungCollector::calculate_collection_set(G1EvacInfo* evacuation_info, double target_pause_time_ms) {
   // Forget the current allocation region (we might even choose it to be part
   // of the collection set!) before finalizing the collection set.
+  //!xiaojin-cset -0.2 release_mutator_alloc_regions 在youngGC collect早期就会填充cset。mutator也会填充。 0.3
   allocator()->release_mutator_alloc_regions();
 
   collection_set()->finalize_initial_collection_set(target_pause_time_ms, survivor_regions());
@@ -508,7 +509,7 @@ void G1YoungCollector::pre_evacuate_collection_set(G1EvacInfo* evacuation_info) 
 
   // Flush early, so later phases don't need to account for per-thread stuff.
   concatenate_dirty_card_logs_and_stats();
-
+//!xiaojin-cset -0.1 calculate_collection_set
   calculate_collection_set(evacuation_info, policy()->max_pause_time_ms());
 
   // Please see comment in g1CollectedHeap.hpp and
@@ -1084,7 +1085,7 @@ void G1YoungCollector::collect() {
     // policy for the collection deliberately elides verification (and some
     // other trivial setup above).
     policy()->record_young_collection_start();
-
+    //!xiaojin-cset -0 将所有mutator分配的regions加入cset中。
     pre_evacuate_collection_set(jtm.evacuation_info());
 
     G1ParScanThreadStateSet per_thread_states(_g1h,
