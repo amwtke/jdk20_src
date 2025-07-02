@@ -183,6 +183,7 @@ inline void G1CMTask::process_grey_task_entry(G1TaskQueueEntry task_entry) {
       if (G1CMObjArrayProcessor::should_be_sliced(obj)) {
         _words_scanned += _objArray_processor.process_obj(obj);
       } else {
+          //! 灰色对象也是要继续遍历的。 作为root。 _cm_oop_closure = G1CMOopClosure.
         _words_scanned += obj->oop_iterate_size(_cm_oop_closure);;
       }
     }

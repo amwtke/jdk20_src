@@ -95,7 +95,7 @@ inline void G1ScanEvacuatedObjClosure::do_oop_work(T* p) {
     _par_scan_state->enqueue_card_if_tracked(region_attr, p, obj);
   }
 }
-
+//!xiaojin-mark 每个灰色对象都会 遍历他们的引用。G1CMOopClosure。
 template <class T>
 inline void G1CMOopClosure::do_oop_work(T* p) {
   _task->deal_with_reference(p);
