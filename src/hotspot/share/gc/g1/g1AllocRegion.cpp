@@ -148,6 +148,7 @@ HeapWord* G1AllocRegion::new_alloc_region_and_allocate(size_t word_size,
     // Note that we first perform the allocation and then we store the
     // region in _alloc_region. This is the reason why an active region
     // can never be empty.
+    //!xiaojin-cset 更新 alloc_region 。每个mutator 线程都会优先在这个region分配对象内存 相当于一个cache。
     update_alloc_region(new_alloc_region);
     trace("region allocation successful");
     return result;
