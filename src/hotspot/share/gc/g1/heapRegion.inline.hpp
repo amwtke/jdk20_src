@@ -507,7 +507,7 @@ HeapWord* HeapRegion::oops_on_memregion_seq_iterate_careful(MemRegion mr,
   // We might be in the progress of scrubbing this region and in this
   // case there might be objects that have their classes unloaded and
   // therefore needs to be scanned using the bitmap.
-
+//!xiaojin-cardtable refine-3 oops_on_memregion_iterate
   return oops_on_memregion_iterate<Closure, in_gc_pause>(mr, cl);
 }
 

@@ -399,7 +399,7 @@ class G1RefineBufferedCards : public StackObj {
     _stats->inc_precleaned_cards(first_clean - start);
     return first_clean;
   }
-
+//!xiaojin-cardtable refine 函数 refine_cleaned_cards
   bool refine_cleaned_cards(size_t start_index) {
     bool result = true;
     size_t i = start_index;
@@ -510,6 +510,7 @@ void G1DirtyCardQueueSet::handle_completed_buffer(BufferNode* new_node,
   // Refine cards in buffer.
 
   uint worker_id = _free_ids.claim_par_id(); // temporarily claim an id
+  //!xiaojin-cardtable refine到rset中。
   bool fully_processed = refine_buffer(node, worker_id, stats);
   _free_ids.release_par_id(worker_id); // release the id
 

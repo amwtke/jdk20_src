@@ -1610,7 +1610,7 @@ void G1RemSet::refine_card_concurrently(CardValue* const card_ptr,
   HeapWord* end = start + G1CardTable::card_size_in_words();
   MemRegion dirty_region(start, MIN2(scan_limit, end));
   assert(!dirty_region.is_empty(), "sanity");
-
+//!xiaojin-cardtable refine -2 G1ConcurrentRefineOopClosure
   G1ConcurrentRefineOopClosure conc_refine_cl(_g1h, worker_id);
   if (r->oops_on_memregion_seq_iterate_careful<false>(dirty_region, &conc_refine_cl) != NULL) {
     return;
