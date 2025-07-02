@@ -293,6 +293,7 @@ class G1ConcurrentMark : public CHeapObj<mtGC> {
   G1CollectedHeap*        _g1h;           // The heap
 
   // Concurrent marking support structures
+  //!xiaojin-mark bitmap在这里
   G1CMBitMap              _mark_bitmap;
 
   // Heap bounds
@@ -302,6 +303,7 @@ class G1ConcurrentMark : public CHeapObj<mtGC> {
   G1CMRootMemRegions      _root_regions;
 
   // For grey objects
+  //!xiaojin-mark 灰色对象的全局stack，最后每个线程的stack都会合并到这里。
   G1CMMarkStack           _global_mark_stack; // Grey objects behind global finger
   HeapWord* volatile      _finger;            // The global finger, region aligned,
                                               // always pointing to the end of the

@@ -107,6 +107,7 @@ void G1DirtyCardQueueSet::handle_zero_index(G1DirtyCardQueue& queue) {
   if (old_node != nullptr) {
     G1ConcurrentRefineStats* stats = queue.refinement_stats();
     stats->inc_dirtied_cards(buffer_size());
+    //!xiaojin-cardtable  refine 合并到全局的 reset 中。
     handle_completed_buffer(old_node, stats);
   }
 }

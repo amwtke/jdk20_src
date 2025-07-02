@@ -94,6 +94,7 @@ void G1BarrierSet::write_ref_field_post_slow(volatile CardValue* byte) {
   assert(*byte != G1CardTable::g1_young_card_val(), "slow path invoked without filtering");
   OrderAccess::storeload();
   if (*byte != G1CardTable::dirty_card_val()) {
+      //! 把老年代对年轻代引用的那个老年代对象的card table byte 设置成dirty。
     *byte = G1CardTable::dirty_card_val();
     Thread* thr = Thread::current();
     G1DirtyCardQueue& queue = G1ThreadLocalData::dirty_card_queue(thr);

@@ -129,6 +129,7 @@ class HeapRegionClosure;
 // ||                              ... after step b6)
 // |SSS|                           ... after step 7), with three survivor regions
 //
+//!xiaojin-cset collection set 就是youngGC阶段收集的要回收的region集合。包含了 eden survival old的candidates region。这些region都要把存活对象迁移合并。
 class G1CollectionSet {
   G1CollectedHeap* _g1h;
   G1Policy* _policy;

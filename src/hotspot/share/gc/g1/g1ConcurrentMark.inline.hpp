@@ -74,10 +74,10 @@ inline bool G1CMSubjectToDiscoveryClosure::do_object_b(oop obj) {
   assert(_g1h->is_in_reserved(obj), "Trying to discover obj " PTR_FORMAT " not in heap", p2i(obj));
   return _g1h->heap_region_containing(obj)->is_old_or_humongous_or_archive();
 }
-
+//!xiaojin-mark 并发标记设置 obj的颜色。bitmap中设置1表示黑色。mark_in_bitmap。
 inline bool G1ConcurrentMark::mark_in_bitmap(uint const worker_id, oop const obj) {
   HeapRegion* const hr = _g1h->heap_region_containing(obj);
-
+    //! 如果在 tams - top at mark start 之后分配的新对象，默认不标记，是黑色。
   if (hr->obj_allocated_since_marking_start(obj)) {
     return false;
   }
@@ -85,7 +85,7 @@ inline bool G1ConcurrentMark::mark_in_bitmap(uint const worker_id, oop const obj
   // Some callers may have stale objects to mark above TAMS after humongous reclaim.
   // Can't assert that this is a valid object at this point, since it might be in the process of being copied by another thread.
   assert(!hr->is_continues_humongous(), "Should not try to mark object " PTR_FORMAT " in Humongous continues region %u above TAMS " PTR_FORMAT, p2i(obj), hr->hrm_index(), p2i(hr->top_at_mark_start()));
-
+//! 将对象在bitmap中对应的bit设置成1，表示黑色。
   bool success = _mark_bitmap.par_mark(obj);
   if (success) {
     add_to_liveness(worker_id, obj, obj->size());
@@ -124,7 +124,7 @@ inline void G1CMTask::push(G1TaskQueueEntry task_entry) {
   assert(task_entry.is_array_slice() || !_g1h->is_on_master_free_list(
               _g1h->heap_region_containing(task_entry.obj())), "invariant");
   assert(task_entry.is_array_slice() || _mark_bitmap->is_marked(cast_from_oop<HeapWord*>(task_entry.obj())), "invariant");
-
+//! 把灰色obj push到线程本地的 queue，如果满了，或者阈值到了，就合并到全局的。
   if (!_task_queue->push(task_entry)) {
     // The local task queue looks full. We need to push some entries
     // to the global stack.
@@ -167,7 +167,7 @@ inline bool G1CMTask::is_below_finger(oop obj, HeapWord* global_finger) const {
   // Check global finger.
   return objAddr < global_finger;
 }
-
+//!xiaojin-mark 处理grey object。继续mark grey。在线程中有queue，直接运行；还可以偷其他线程的queue 通过全局。process_grey_task_entry
 template<bool scan>
 inline void G1CMTask::process_grey_task_entry(G1TaskQueueEntry task_entry) {
   assert(scan || (task_entry.is_oop() && task_entry.obj()->is_typeArray()), "Skipping scan of grey non-typeArray");
@@ -228,6 +228,7 @@ inline void G1CMTask::abort_marking_if_regular_check_fail() {
 }
 
 inline bool G1CMTask::make_reference_grey(oop obj) {
+    //! bitmap标记1，黑色.
   if (!_cm->mark_in_bitmap(_worker_id, obj)) {
     return false;
   }
@@ -264,6 +265,7 @@ inline bool G1CMTask::make_reference_grey(oop obj) {
       // references, and the metadata is built-in.
       process_grey_task_entry<false>(entry);
     } else {
+        //!xiaojin-mark 灰色对象 插入queue。make_reference_grey
       push(entry);
     }
   }
