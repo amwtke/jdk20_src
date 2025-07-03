@@ -140,6 +140,7 @@ inline void G1CMTask::push(G1TaskQueueEntry task_entry) {
   if (!_task_queue->push(task_entry)) {
     // The local task queue looks full. We need to push some entries
     // to the global stack.
+    //! 本地灰色对象buffer满了，就转移到全局
     move_entries_to_global_stack();
 
     // this should succeed since, even if we overflow the global
@@ -278,7 +279,7 @@ inline bool G1CMTask::make_reference_grey(oop obj) {
       // references, and the metadata is built-in.
       process_grey_task_entry<false>(entry);
     } else {
-        //!xiaojin-mark 灰色对象 插入queue。make_reference_grey
+        //!xiaojin-mark satb -4灰色对象 插入task queue 后续还要进行深度遍历 以 entry 为root的存活对象。make_reference_grey
       push(entry);
     }
   }

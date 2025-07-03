@@ -1768,7 +1768,7 @@ private:
   void do_entry(void* entry) const {
     _task->increment_refs_reached();
     oop const obj = cast_to_oop(entry);
-    //!xiaojin-mark satb 队列中的obj都标记位灰色。
+    //!xiaojin-mark satb -3 队列中的obj都标记位灰色。同时放入 task_queue 准备处理 make_reference_grey
     _task->make_reference_grey(obj);
   }
 
@@ -2311,6 +2311,7 @@ void G1CMTask::move_entries_to_global_stack() {
   }
 
   if (n > 0) {
+      //!xiaojin-mark satb -5 转移到全局的 灰色 task_queue stack。_global_mark_stack 是task队列，是用来进一步标记的起点。
     if (!_cm->mark_stack_push(buffer)) {
       set_has_aborted();
     }
@@ -2375,7 +2376,7 @@ void G1CMTask::drain_local_queue(bool partially) {
     }
   }
 }
-
+//!xiaojin-mark satb -6 最终全局 task_queue 会重新遍历。
 void G1CMTask::drain_global_stack(bool partially) {
   if (has_aborted()) {
     return;
@@ -2428,7 +2429,7 @@ void G1CMTask::drain_satb_buffers() {
   // This keeps claiming and applying the closure to completed buffers
   // until we run out of buffers or we need to abort.
   while (!has_aborted() &&
-  //!xiaojin-mark satb 全局队列的消费，都标记灰色。
+  //!xiaojin-mark satb -2 全局satb队列的消费，都标记灰色。
          satb_mq_set.apply_closure_to_completed_buffer(&satb_cl)) {
     abort_marking_if_regular_check_fail();
   }
