@@ -1768,6 +1768,7 @@ private:
   void do_entry(void* entry) const {
     _task->increment_refs_reached();
     oop const obj = cast_to_oop(entry);
+    //!xiaojin-mark satb 队列中的obj都标记位灰色。
     _task->make_reference_grey(obj);
   }
 
@@ -2427,6 +2428,7 @@ void G1CMTask::drain_satb_buffers() {
   // This keeps claiming and applying the closure to completed buffers
   // until we run out of buffers or we need to abort.
   while (!has_aborted() &&
+  //!xiaojin-mark satb 全局队列的消费，都标记灰色。
          satb_mq_set.apply_closure_to_completed_buffer(&satb_cl)) {
     abort_marking_if_regular_check_fail();
   }

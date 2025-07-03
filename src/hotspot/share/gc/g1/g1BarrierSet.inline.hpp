@@ -66,6 +66,7 @@ inline void G1BarrierSet::write_ref_field_pre(T* field) {
     return;
   }
 //!satb-enqueue -1
+//!xiaojin-mark satb 在写屏障pre阶段会将快照obj放入 satb 队列，后续concurrent marking阶段会处理。
   enqueue(field);
 }
 
