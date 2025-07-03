@@ -1257,7 +1257,7 @@ void G1Policy::decide_on_concurrent_start_pause() {
   // We also do not allow mixed GCs during marking.
   assert(!collector_state()->mark_or_rebuild_in_progress() || collector_state()->in_young_only_phase(), "sanity");
 }
-//!xiaojin-cset concurrent marking 收集需要mixedGC回收的regions。cset放在 G1Policy类中。
+//!xiaojin-cset concurrent marking 老年代收集的半满region，需要mixedGC回收的regions放入全局的cset中。G1Policy类中的cset对象就是全局的，在初始化阶段赋值。
 void G1Policy::record_concurrent_mark_cleanup_end(bool has_rebuilt_remembered_sets) {
   bool mixed_gc_pending = false;
   if (has_rebuilt_remembered_sets) {

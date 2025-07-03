@@ -409,7 +409,7 @@ void G1CollectionSet::move_candidates_to_collection_set(uint num_old_candidate_r
     // This potentially optional candidate region is going to be an actual collection
     // set region. Clear cset marker.
     _g1h->clear_region_attr(r);
-    //!xiaojin-cset 将candidate加入old region集合。
+    //!xiaojin-cset 将老年代的candidate加入old region集合。
     add_old_region(r);
   }
   candidates()->remove(num_old_candidate_regions);
