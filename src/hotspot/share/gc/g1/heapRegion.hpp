@@ -230,6 +230,7 @@ private:
   // word until the top and/or end of the region, and is the part
   // of the region for which no marking was done, i.e. objects may
   // have been allocated in this part since the last mark phase.
+  //!xiaojin-mark TAMS 字段。_top_at_mark_start
   HeapWord* volatile _top_at_mark_start;
 
   // The area above this limit is fully parsable. This limit
