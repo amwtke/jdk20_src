@@ -929,6 +929,11 @@ uint G1ConcurrentMark::calc_active_marking_workers() {
   return result;
 }
 
+  /*
+   !xiaojin-cm concurrent marking只扫描老年代的regions.
+   1、通过 retire_gc_alloc_region 函数将一个region加入old，跟cset操作类似 —— 从mutator retire。
+   2、concurrent marking 会包含youngGC root到扫描路径，不会漏标从年轻代到老年代的引用。再加上satb的写屏障，就更稳了。
+   * */
 void G1ConcurrentMark::scan_root_region(const MemRegion* region, uint worker_id) {
 #ifdef ASSERT
   HeapWord* last = region->last();

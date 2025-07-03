@@ -3276,6 +3276,7 @@ void G1CollectedHeap::retire_gc_alloc_region(HeapRegion* alloc_region,
 
   bool const during_im = collector_state()->in_concurrent_start_gc();
   if (during_im && allocated_bytes > 0) {
+      //!xiaojin-cm 将old老年代region加入到 cm的扫描集合。
     _cm->add_root_region(alloc_region);
   }
   _hr_printer.retire(alloc_region);
