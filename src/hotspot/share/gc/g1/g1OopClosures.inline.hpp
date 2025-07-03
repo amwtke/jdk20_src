@@ -228,12 +228,14 @@ void G1ParCopyClosure<barrier, should_mark>::do_oop_work(T* p) {
 //! 通过obj地址，得到region的attrib对象。
   const G1HeapRegionAttr state = _g1h->region_attr(obj);
   //!xiaojin-cset -4 扫描root下的直接关联对象，只有在cset中的region中的存活对象， 才会移动。is_in_cset
+  //!xiaojin-is_in_cset 调用处，就是筛选那些在cset中的region才能移动。包括 old region。mixedGC阶段。
   if (state.is_in_cset()) {
     oop forwardee;
     markWord m = obj->mark();
     if (m.is_marked()) {
       forwardee = cast_to_oop(m.decode_pointer());
     } else {
+        //!xiaojin-is_in_cset move_candidates_to_collection_set 这是害死人的方法名，其实也包含了对 老年代 半满对象的回收，copy的过程是看obj的region attr来决定的。如果是old就移动到old，young就移动到survival。
       forwardee = _par_scan_state->copy_to_survivor_space(state, obj, m);
     }
     assert(forwardee != NULL, "forwardee should not be NULL");

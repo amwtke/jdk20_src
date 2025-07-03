@@ -51,6 +51,11 @@ public:
   //
   // The other values are used for objects in regions requiring various special handling,
   // eager reclamation of humongous objects or optional regions.
+  /*
+    !xiaojin-is_in_cset原理：
+    1.每个region都有自己region attr，类似cardtable，是个byte数组；
+    2.注意，默认的情况是 NotInCSet的，这也是G1代码复杂的原因。
+   */
   static const region_type_t Optional     =  -4;    // The region is optional not in the current collection set.
   static const region_type_t HumongousCandidate    =  -3;    // The region is a humongous candidate not in the current collection set.
   static const region_type_t NewSurvivor  =  -2;    // The region is a new (ly allocated) survivor region.
@@ -149,13 +154,13 @@ class G1HeapRegionAttrBiasedMappedArray : public G1BiasedMappedArray<G1HeapRegio
   void set_remset_is_tracked(uintptr_t index, bool remset_is_tracked) {
     get_ref_by_index(index)->set_remset_is_tracked(remset_is_tracked);
   }
-
+//!xiaojin-is_in_cset set_in_young 在给mutator分配对象，retire的时候 add_young_region_common 调用。作用就是把这个region加入cset。
   void set_in_young(uintptr_t index) {
     assert(get_by_index(index).is_default(),
            "Region attributes at index " INTPTR_FORMAT " should be default but is %s", index, get_by_index(index).get_type_str());
     set_by_index(index, G1HeapRegionAttr(G1HeapRegionAttr::Young, true));
   }
-
+//!xiaojin-is_in_cset set_in_old region加入old region，打上标签，在 move_candidates_to_collection_set 的时候调用。作用是在mixed阶段，合并 concurrent marking阶段的 半满old region。一并在youngGC阶段迁移。
   void set_in_old(uintptr_t index, bool remset_is_tracked) {
     assert(get_by_index(index).is_default(),
            "Region attributes at index " INTPTR_FORMAT " should be default but is %s", index, get_by_index(index).get_type_str());
