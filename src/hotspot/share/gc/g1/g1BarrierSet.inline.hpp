@@ -71,6 +71,7 @@ inline void G1BarrierSet::write_ref_field_pre(T* field) {
 
 template <DecoratorSet decorators, typename T>
 inline void G1BarrierSet::write_ref_field_post(T* field, oop new_val) {
+    //! new_val 是年轻对象，filed是老年对象。也就是老年代对象引用了年轻代对象。
   volatile CardValue* byte = _card_table->byte_for(field);
   //! 从card表中可以看出某个对象是否是old。
   if (*byte != G1CardTable::g1_young_card_val()) {
