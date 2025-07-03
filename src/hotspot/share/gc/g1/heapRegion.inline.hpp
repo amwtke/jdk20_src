@@ -44,6 +44,7 @@
 inline HeapWord* HeapRegion::allocate_impl(size_t min_word_size,
                                            size_t desired_word_size,
                                            size_t* actual_size) {
+    //!xiaojin top指针是按顺序分配obj空间的。
   HeapWord* obj = top();
   size_t available = pointer_delta(end(), obj);
   size_t want_to_allocate = MIN2(available, desired_word_size);
