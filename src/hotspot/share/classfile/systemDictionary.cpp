@@ -334,6 +334,7 @@ Klass* SystemDictionary::resolve_or_null(Symbol* class_name, Handle class_loader
                                                    class_name->utf8_length() - 2);
       return resolve_instance_class_or_null(name, class_loader, protection_domain, THREAD);
     } else {
+        //!xiaojin-classloader -2.1
       return resolve_instance_class_or_null(class_name, class_loader, protection_domain, THREAD);
     }
   }
@@ -765,6 +766,7 @@ InstanceKlass* SystemDictionary::resolve_instance_class_or_null(Symbol* name,
 
     if (loaded_class == NULL) {
       // Do actual loading
+      //!xiaojin-classloader -2.2 load_instance_class 如果缓存中没有，就开始load class
       loaded_class = load_instance_class(name, class_loader, THREAD);
     }
 
@@ -1410,7 +1412,7 @@ InstanceKlass* SystemDictionary::load_instance_class_impl(Symbol* class_name, Ha
 InstanceKlass* SystemDictionary::load_instance_class(Symbol* name,
                                                      Handle class_loader,
                                                      TRAPS) {
-
+    //!xiaojin-classloader -2.3 load_instance_class_impl
   InstanceKlass* loaded_class = load_instance_class_impl(name, class_loader, CHECK_NULL);
 
   // If everything was OK (no exceptions, no null return value), and
