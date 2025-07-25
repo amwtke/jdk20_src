@@ -287,6 +287,7 @@ Java_java_lang_ClassLoader_defineClass0(JNIEnv *env,
 /*
  * Returns NULL if class not found.
  */
+//!xiaojin-classloader -1 bootstrap classLoader。
 JNIEXPORT jclass JNICALL
 Java_java_lang_ClassLoader_findBootstrapClass(JNIEnv *env, jclass dummy,
                                               jstring classname)

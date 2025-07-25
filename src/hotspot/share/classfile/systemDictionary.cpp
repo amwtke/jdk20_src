@@ -319,12 +319,14 @@ Klass* SystemDictionary::resolve_or_fail(Symbol* class_name, Handle class_loader
 }
 
 // Forwards to resolve_array_class_or_null or resolve_instance_class_or_null
-
+//!xiaojin-classloader -2 主要的装载class的方法。
 Klass* SystemDictionary::resolve_or_null(Symbol* class_name, Handle class_loader, Handle protection_domain, TRAPS) {
   if (Signature::is_array(class_name)) {
     return resolve_array_class_or_null(class_name, class_loader, protection_domain, THREAD);
   } else {
     assert(class_name != NULL && !Signature::is_array(class_name), "must be");
+    //!https://chatgpt.com/c/6881b0bf-7258-800a-9684-15c4204e9a1c
+    // 判断是否是一个method。
     if (Signature::has_envelope(class_name)) {
       ResourceMark rm(THREAD);
       // Ignore wrapping L and ;.
@@ -691,6 +693,8 @@ InstanceKlass* SystemDictionary::resolve_instance_class_or_null(Symbol* name,
 
   // If the class is in the placeholder table with super_class set,
   // handle superclass loading in progress.
+  //!https://chatgpt.com/c/6882f906-2e28-800a-9780-68ad46fdabdd
+  // 是否父类正在加载，这里用于解决循环依赖，所以子类是一个placeholder。
   if (super_load_in_progress) {
     handle_parallel_super_load(name, superclassname,
                                class_loader,
@@ -1342,6 +1346,7 @@ InstanceKlass* SystemDictionary::load_instance_class_impl(Symbol* class_name, Ha
     if (k == NULL) {
       // Use VM class loader
       PerfTraceTime vmtimer(ClassLoader::perf_sys_classload_time());
+      //!xiaojin-classloader -3 boot loader load class。
       k = ClassLoader::load_class(class_name, search_only_bootloader_append, CHECK_NULL);
     }
 
