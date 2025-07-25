@@ -288,6 +288,7 @@ Java_java_lang_ClassLoader_defineClass0(JNIEnv *env,
  * Returns NULL if class not found.
  */
 //!xiaojin-classloader -1 bootstrap classLoader。
+//xiaojin-classloader (exp!) main函数的执行过程参考：https://chatgpt.com/c/68834433-a3f8-800a-a737-6d4eda57ee41
 JNIEXPORT jclass JNICALL
 Java_java_lang_ClassLoader_findBootstrapClass(JNIEnv *env, jclass dummy,
                                               jstring classname)
