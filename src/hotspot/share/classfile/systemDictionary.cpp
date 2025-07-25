@@ -647,6 +647,7 @@ InstanceKlass* SystemDictionary::resolve_instance_class_or_null(Symbol* name,
   // This call uses find which checks protection domain already matches
   // All subsequent calls use find_class, and set loaded_class so that
   // before we return a result, we call out to java to check for valid protection domain.
+  //!xiaojin-forName-2 说明用全类名加载一个class，还是要从一个classLoader出发。内部有个dictionary。
   InstanceKlass* probe = dictionary->find(THREAD, name, protection_domain);
   if (probe != NULL) return probe;
 

@@ -3530,6 +3530,7 @@ jclass find_class_from_class_loader(JNIEnv* env, Symbol* name, jboolean init,
   //   the checkPackageAccess relative to the initiating class loader via the
   //   protection_domain. The protection_domain is passed as NULL by the java code
   //   if there is no security manager in 3-arg Class.forName().
+  //!xiaojin-forName-1 SystemDictionary::resolve_or_fail
   Klass* klass = SystemDictionary::resolve_or_fail(name, loader, protection_domain, throwError != 0, CHECK_NULL);
 
   // Check if we should initialize the class

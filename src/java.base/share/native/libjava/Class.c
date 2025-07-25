@@ -101,7 +101,7 @@ Java_java_lang_Class_registerNatives(JNIEnv *env, jclass cls)
     (*env)->RegisterNatives(env, cls, methods,
                             sizeof(methods)/sizeof(JNINativeMethod));
 }
-
+//!xiaojin-forName-0 调用点
 JNIEXPORT jclass JNICALL
 Java_java_lang_Class_forName0(JNIEnv *env, jclass this, jstring classname,
                               jboolean initialize, jobject loader, jclass caller)
