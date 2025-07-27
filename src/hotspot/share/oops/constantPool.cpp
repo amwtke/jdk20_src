@@ -1047,9 +1047,10 @@ oop ConstantPool::resolve_constant_at_impl(const constantPoolHandle& this_cp,
       }
       break;
     }
-
+//!xiaojin-string 字面量-0 JVM_CONSTANT_String
   case JVM_CONSTANT_String:
     assert(cache_index != _no_index_sentinel, "should have been set");
+    //!xiaojin-string 字面量-1 string_at_impl
     result_oop = string_at_impl(this_cp, index, cache_index, CHECK_NULL);
     break;
 
@@ -1226,6 +1227,7 @@ oop ConstantPool::string_at_impl(const constantPoolHandle& this_cp, int which, i
   assert(str != Universe::the_null_sentinel(), "");
   if (str != NULL) return str;
   Symbol* sym = this_cp->unresolved_string_at(which);
+  //!xiaojin-string 字面量-2 intern
   str = StringTable::intern(sym, CHECK_(NULL));
   this_cp->string_at_put(which, obj_index, str);
   assert(java_lang_String::is_instance(str), "must be string");

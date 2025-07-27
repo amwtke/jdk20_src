@@ -295,18 +295,19 @@ oop StringTable::do_lookup(const jchar* name, int len, uintx hash) {
   update_needs_rehash(rehash_warning);
   return stg.get_res_oop();
 }
-
+//!xiaojin-string symbol-intern 类名 方法名的 intern
 // Interning
 oop StringTable::intern(Symbol* symbol, TRAPS) {
   if (symbol == NULL) return NULL;
   ResourceMark rm(THREAD);
   int length;
+  //!xiaojin-string 字面量-3 拿到symbol中的字面量 char*。
   jchar* chars = symbol->as_unicode(length);
   Handle string;
   oop result = intern(string, chars, length, CHECK_NULL);
   return result;
 }
-//!xiaojin-string intern StringTable就是存放字符串常量的地方。
+//!xiaojin-string oop-intern new String().intern() 的intern。StringTable就是存放字符串常量的地方。
 oop StringTable::intern(oop string, TRAPS) {
   if (string == NULL) return NULL;
   ResourceMark rm(THREAD);
@@ -317,7 +318,7 @@ oop StringTable::intern(oop string, TRAPS) {
   oop result = intern(h_string, chars, length, CHECK_NULL);
   return result;
 }
-
+//!xiaojin-string char-intern 字面量的intern。
 oop StringTable::intern(const char* utf8_string, TRAPS) {
   if (utf8_string == NULL) return NULL;
   ResourceMark rm(THREAD);
@@ -354,6 +355,7 @@ oop StringTable::do_intern(Handle string_or_null_h, const jchar* name,
   if (!string_or_null_h.is_null()) {
     string_h = string_or_null_h;
   } else {
+      //!xiaojin-string 字面量-4 包装到String类
     string_h = java_lang_String::create_from_unicode(name, len, CHECK_NULL);
   }
 
@@ -376,6 +378,7 @@ oop StringTable::do_intern(Handle string_or_null_h, const jchar* name,
     // Callers have already looked up the String using the jchar* name, so just go to add.
     WeakHandle wh(_oop_storage, string_h);
     // The hash table takes ownership of the WeakHandle, even if it's not inserted.
+    //!xiaojin-string 字面量-5 最终插入 _local_table中。
     if (_local_table->insert(THREAD, lookup, wh, &rehash_warning)) {
       update_needs_rehash(rehash_warning);
       return wh.resolve();
