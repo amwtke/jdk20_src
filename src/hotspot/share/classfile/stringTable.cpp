@@ -306,7 +306,7 @@ oop StringTable::intern(Symbol* symbol, TRAPS) {
   oop result = intern(string, chars, length, CHECK_NULL);
   return result;
 }
-
+//!xiaojin-string intern StringTable就是存放字符串常量的地方。
 oop StringTable::intern(oop string, TRAPS) {
   if (string == NULL) return NULL;
   ResourceMark rm(THREAD);

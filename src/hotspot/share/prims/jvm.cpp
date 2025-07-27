@@ -3475,11 +3475,12 @@ JVM_LEAF(jboolean, JVM_IsContinuationsSupported(void))
 JVM_END
 
 // String support ///////////////////////////////////////////////////////////////////////////
-
+//!xiaojin-string -1 JVM_InternString
 JVM_ENTRY(jstring, JVM_InternString(JNIEnv *env, jstring str))
   JvmtiVMObjectAllocEventCollector oam;
   if (str == NULL) return NULL;
   oop string = JNIHandles::resolve_non_null(str);
+  //!xiaojin-string -2 最终还是调用 StringTable::intern
   oop result = StringTable::intern(string, CHECK_NULL);
   return (jstring) JNIHandles::make_local(THREAD, result);
 JVM_END

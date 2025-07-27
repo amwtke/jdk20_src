@@ -25,7 +25,7 @@
 
 #include "jvm.h"
 #include "java_lang_String.h"
-
+//!xiaojin-string -0 intern的入口
 JNIEXPORT jobject JNICALL
 Java_java_lang_String_intern(JNIEnv *env, jobject this)
 {
