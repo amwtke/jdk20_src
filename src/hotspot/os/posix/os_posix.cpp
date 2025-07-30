@@ -1559,6 +1559,7 @@ int PlatformEvent::park(jlong millis) {
     to_abstime(&abst, millis_to_nanos_bounded(millis), false, false);
 
     int ret = OS_TIMEOUT;
+    //!这里对_mutex的竞争主要是为了修改唤醒队列的信息，，比如 一共多少个waiter在等待。不然最后都不知道要唤醒多少个。
     int status = pthread_mutex_lock(_mutex);
     assert_status(status == 0, status, "mutex_lock");
     guarantee(_nParked == 0, "invariant");
@@ -1624,6 +1625,7 @@ void PlatformEvent::unpark() {
   // provide wait morphing.
 
   if (anyWaiters != 0) {
+      //!xiaojin-synchronized -5 unpark
     status = pthread_cond_signal(_cond);
     assert_status(status == 0, status, "cond_signal");
   }
