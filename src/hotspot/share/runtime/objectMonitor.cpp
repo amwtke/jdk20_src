@@ -350,6 +350,7 @@ bool ObjectMonitor::enter(JavaThread* current) {
   // transitions.  The following spin is strictly optional ...
   // Note that if we acquire the monitor from an initial spin
   // we forgo posting JVMTI events and firing DTRACE probes.
+  //!xiaojin-synchronized -3.1 先自旋一阵子，以免尴尬 ……
   if (TrySpin(current) > 0) {
     assert(owner_raw() == current, "must be current: owner=" INTPTR_FORMAT, p2i(owner_raw()));
     assert(_recursions == 0, "must be 0: recursions=" INTX_FORMAT, _recursions);
@@ -418,6 +419,7 @@ bool ObjectMonitor::enter(JavaThread* current) {
       ExitOnSuspend eos(this);
       {
         ThreadBlockInVMPreprocess<ExitOnSuspend> tbivs(current, eos, true /* allow_suspend */);
+        //!xiaojin-synchronized -3.2 EnterI 开始准备抢锁。
         EnterI(current);
         current->set_current_pending_monitor(NULL);
         // We can go to a safepoint at the end of this block. If we
@@ -681,6 +683,7 @@ void ObjectMonitor::EnterI(JavaThread* current) {
   assert(current->thread_state() == _thread_blocked, "invariant");
 
   // Try the lock - TATAS
+  //!xiaojin-synchronized -3.3 先尝试 如果其他线程已经释放了锁，就能直接结束了。
   if (TryLock (current) > 0) {
     assert(_succ != current, "invariant");
     assert(owner_raw() == current, "invariant");
@@ -809,6 +812,7 @@ void ObjectMonitor::EnterI(JavaThread* current) {
     assert(owner_raw() != current, "invariant");
 
     // park self
+    //!xiaojin-synchronized -4 休眠的地方
     if (_Responsible == current) {
       current->_ParkEvent->park((jlong) recheckInterval);
       // Increase the recheckInterval, but clamp the value.

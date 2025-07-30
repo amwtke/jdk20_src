@@ -734,6 +734,7 @@ void InterpreterRuntime::resolve_get_put(JavaThread* current, Bytecodes::Code by
 //%note synchronization_3
 
 //%note monitor_1
+//!xiaojin-synchronized -0 monitorenter
 JRT_ENTRY_NO_ASYNC(void, InterpreterRuntime::monitorenter(JavaThread* current, BasicObjectLock* elem))
 #ifdef ASSERT
   current->last_frame().interpreter_frame_verify_monitor(elem);

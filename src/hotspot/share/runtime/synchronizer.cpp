@@ -474,14 +474,14 @@ static bool useHeavyMonitors() {
 // The interpreter and compiler assembly code tries to lock using the fast path
 // of this algorithm. Make sure to update that code if the following function is
 // changed. The implementation is extremely sensitive to race condition. Be careful.
-
+//!xiaojin-synchronized -1 ObjectSynchronizer::enter
 void ObjectSynchronizer::enter(Handle obj, BasicLock* lock, JavaThread* current) {
   if (obj->klass()->is_value_based()) {
     handle_sync_on_value_based_class(obj, current);
   }
 
   current->inc_held_monitor_count();
-
+//!UseHeavyMonitors 是一个配置 是否强制都使用重量级锁。默认值是false。
   if (!useHeavyMonitors()) {
     markWord mark = obj->mark();
     if (mark.is_neutral()) {
@@ -513,7 +513,9 @@ void ObjectSynchronizer::enter(Handle obj, BasicLock* lock, JavaThread* current)
   // enter() can make the ObjectMonitor busy. enter() returns false if
   // we have lost the race to async deflation and we simply try again.
   while (true) {
+      //!xiaojin-synchronized -2 inflate 在obj上安装一个monitor对象。
     ObjectMonitor* monitor = inflate(current, obj(), inflate_cause_monitor_enter);
+    //!xiaojin-synchronized -3 尝试获取 monitor锁。
     if (monitor->enter(current)) {
       return;
     }
@@ -1245,6 +1247,7 @@ ObjectMonitor* ObjectSynchronizer::inflate(Thread* current, oop object,
     LogStreamHandle(Trace, monitorinflation) lsh;
 
     if (mark.has_locker()) {
+        //!xiaojin-synchronized -2.1 生成一个monitor对象。
       ObjectMonitor* m = new ObjectMonitor(object);
       // Optimistically prepare the ObjectMonitor - anticipate successful CAS
       // We do this before the CAS in order to minimize the length of time
@@ -1306,6 +1309,7 @@ ObjectMonitor* ObjectSynchronizer::inflate(Thread* current, oop object,
       // be stable at the time of publishing the monitor address.
       guarantee(object->mark() == markWord::INFLATING(), "invariant");
       // Release semantics so that above set_object() is seen first.
+      //!xiaojin-synchronized -2.2 将monitor对象安装到 object 上
       object->release_set_mark(markWord::encode(m));
 
       // Once ObjectMonitor is configured and the object is associated

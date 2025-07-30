@@ -1535,7 +1535,7 @@ void PlatformEvent::park() {       // AKA "down()"
   }
   guarantee(_event >= 0, "invariant");
 }
-
+//!xiaojin-synchronized -4.1 park函数
 int PlatformEvent::park(jlong millis) {
   // Transitions for _event:
   //   -1 => -1 : illegal
